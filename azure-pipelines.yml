@@ -1,0 +1,24 @@
+trigger:
+  - main  # Change this if your branch is different
+
+pool:
+  vmImage: 'ubuntu-latest'  # Use a Microsoft-hosted agent
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'  # Set Node.js version
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install -g @angular/cli
+      npm install
+      ng build --configuration=production
+    displayName: 'Build Angular App'
+
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: 'my-angular-app-service-connection'  # Replace with your Azure Service Connection
+      appName: 'my-angular-app'  # Replace with your Azure Web App name
+      package: 'dist/my-angular-app'  # Adjust based on your build output folder
+    displayName: 'Deploy to Azure'
